@@ -1,1 +1,4 @@
-# JourneyToKosan 
+JourneyToKosan 
+==============
+
+# By rmxhaha & ParadiseCatz
