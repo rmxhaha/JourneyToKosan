@@ -40,7 +40,7 @@ RainEmitter.prototype.spawn = function( sprite ){
 	sprite.revive( 100 );
 	sprite.body.x = this.getX();
 	sprite.body.y = this.getY();
-	sprite.body.mass = 0.00001;
+	sprite.body.mass = eps;
 	var v = this.getV();
 	var te = Math.PI * 2 * Math.random();
 	sprite.body.velocity.x = -1000;
@@ -98,7 +98,9 @@ var cursors;
 var r, swipeDetect;
 var leftDown = false;
 var rightDown = false;
-
+var gameOver = false;
+var cameraSprite;
+const eps = 1e-6;
 
 function create() {
 	game.world.scale.set(  1 / window.devicePixelRatio );
@@ -139,14 +141,14 @@ function create() {
 	game.world.setBounds(-5000,-10000, 100000, 20000 );
 	game.stage.backgroundColor = '#333';
 	game.physics.p2.gravity.y = 500;
-	game.physics.p2.friction = 4;
+	game.physics.p2.friction = 0;
 	
     //  Add 2 sprites which we'll join with a spring
     playerSprite = game.add.sprite(200, 400, 'chara');
-	payungSprite = game.add.sprite(60, 200, 'umbrella');
+	payungSprite = game.add.sprite(60, 150, 'umbrella');
 	payungSprite.scale.setTo( 0.35 );
 	
-	game.physics.p2.enable([playerSprite, payungSprite], false);
+	game.physics.p2.enable([playerSprite, payungSprite], true);
 
 	playerSprite.body.fixedRotation = true;
 	playerSprite.body.mass = 500;
@@ -173,9 +175,11 @@ function create() {
 		
 	for( var i = 0; i < pts.length; ++ i ) { pts[i] = pts[i] * 1.3; }
 
+			var revoluteConstraint = game.physics.p2.createRevoluteConstraint(playerSprite, [0,0], payungSprite,  [0,200] );
+
 	payungSprite.body.addPolygon({}, pts);
 	
-	var revoluteConstraint = game.physics.p2.createRevoluteConstraint(playerSprite, [0,0], payungSprite,  [0,200] );
+
 
     cursors = game.input.keyboard.createCursorKeys();
 
@@ -198,7 +202,7 @@ function create() {
 				wetness ++;
 			}
 			if( b == payungSprite.body ){
-			//	sprite.kill();
+				sprite.kill();
 			}
 			if( b == ground.body ){
 				sprite.kill();
@@ -206,20 +210,27 @@ function create() {
 		});
 	});
 	
-	game.camera.follow( playerSprite );
-
+	cameraSprite = game.add.sprite( 0, 400, null);
+	game.physics.p2.enable( cameraSprite, true );
+	cameraSprite.body.addRectangle( 100, 100, 0, 0 );  
+	cameraSprite.body.mass = 1000;
+	// game.camera.focusOn( playerSprite );
 	graphic = game.add.graphics(0,0);
 	graphic.cameraOffset.setTo(0,0);
 	graphic.fixedToCamera = true;
+	// game.paused = true;
 }
 
 var wetness = 0;
 
 function update() {
+	
+	game.camera.focusOnXY( cameraSprite.body.x+350, cameraSprite.body.y-180 );
 	var dt = game.time.elapsed / 1000; // seconds
 	
 	emt.update( dt );
-	emt.spawnX = game.camera.x - game.width;
+	// emt.spawnX = game.camera.x - game.width;
+	emt.spawnX = playerSprite.body.x+350;
 	emt.spawnY = game.camera.y;
 
 	graphic.clear();
@@ -243,8 +254,9 @@ function update() {
 			payungSprite.body.y 
 		);
 	}
+
 	
-	var payungAngleLimit = 1/7;
+	var payungAngleLimit = 1/4;
     if (cursors.left.isDown && payungSprite.body.rotation<Math.PI*payungAngleLimit && payungSprite.body.rotation>Math.PI*-payungAngleLimit)
     {
 		payungSprite.body.applyForce( 
@@ -262,7 +274,7 @@ function update() {
 		);
     }
 	else {
-		var k = payungSprite.body.rotation < Math.PI*0 ? -1 : 1;
+		var k = payungSprite.body.rotation < Math.PI*0 + eps ? -1 : 1;
 		payungSprite.body.applyForce( 
 			[ k*handForce * Math.cos( payungSprite.body.rotation ), k*handForce * Math.sin( payungSprite.body.rotation ) ],
 			payungSprite.body.x,
@@ -274,6 +286,8 @@ function update() {
 	// playerSprite.body.applyForce([-3000,0], playerSprite.body.x, playerSprite.body.y)
 	playerSprite.body.velocity.x = 100;
 	ground.body.velocity.x = -3000;
+	cameraSprite.body.velocity.x = 50;
+	// game.paused = true;
 
 /*
     if (cursors.up.isDown)
