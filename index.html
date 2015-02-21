@@ -7,25 +7,25 @@
 	<script src="js/hammer.js"></script>
 	<script src="js/phaser.min.js"></script>
 	<script src="js/Recognizer.js"></script>
-    <script src="js/Boot.js"></script>
-    <script src="js/Preloader.js"></script>
-    <script src="js/MainMenu.js"></script>
-    <script src="js/Game.js"></script>
 	<script>if (!navigator.isCocoonJS){ window.location.href }</script>
 </head>
 <body style="margin:0">
 	<script>
-	(function() {
 	    var game = new Phaser.Game(
 	    	window.innerWidth * window.devicePixelRatio, 
 			window.innerHeight * window.devicePixelRatio,
 			Phaser.CANVAS, 'game');
-	    game.state.add('Boot', Journey.Boot);
+	</script>
+    <script src="js/Boot.js"></script>
+    <script src="js/Preloader.js"></script>
+    <script src="js/MainMenu.js"></script>
+    <script src="js/Game.js"></script>
+	<script>
+		game.state.add('Boot', Journey.Boot);
 	    game.state.add('Preloader', Journey.Preloader);
 	    game.state.add('MainMenu', Journey.MainMenu);
 	    game.state.add('Game', Journey.Game);
 	    game.state.start('Boot');
-	})();
-</script>
+	</script>
 </body>
 </html>

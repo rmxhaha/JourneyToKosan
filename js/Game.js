@@ -2,7 +2,6 @@ Journey.Game = function(game){
 	this.cursors = null;
 	this.r = null;
 	this.swipeDetect = null;
-	this.cameraSprite = null;
 	this.playerSprite = null;
 	this.payungSprite = null;
 	this.logoSprite = null;
@@ -25,7 +24,6 @@ Journey.Game = function(game){
 	// var rightDown = false;
 	// var gameOver = false;
 	// var tap = false;
-	// var cameraSprite;
 	// var logoSprite;
 	// var wetness = 0;
 	const eps = 1e-6;
@@ -34,21 +32,22 @@ Journey.Game.prototype = {
 
 	create: function() {
 		Journey.gameOver = true;
-		this.game.world.scale.set(  1 / window.devicePixelRatio );
+		//game.world.scale.set(  1 / window.devicePixelRatio );
+		// console.log(window.devicePixelRatio);
 
-		this.r = new Recognizer( this.game.canvas );
+		this.r = new Recognizer( game.canvas );
 		this.dd = new DistanceCounter( this.r );
 		this.swipeDetect = new SwipeDetector( this.dd, 150 );
 		this.swipeDetect.bind('swipeleft', function(){
 			this.leftDown = true;
 			console.log('left');
-			setTimeout( function(){ leftDown = false; }, 50 );
-		});
+			setTimeout( function(){ this.leftDown = false; }.bind(this), 50 );
+		}.bind(this));
 		this.swipeDetect.bind('swiperight', function(){
 			this.rightDown = true;
-			setTimeout( function(){ rightDown = false; }, 50 );
+			setTimeout( function(){ this.rightDown = false; }.bind(this), 50 );
 			
-		});
+		}.bind(this));
 
 	 //    //this.add.image(0, 0, 'sky');
 		
@@ -108,13 +107,23 @@ Journey.Game.prototype = {
 
 		this.emt = new RainEmitter(this, 0,0, Journey.GAME_WIDTH*2, 100, 100, 1500, 500 );
 
+		this.emt.sprites.forEach( function( sprite ){
+			sprite.body.onBeginContact.add(function( b ){
+				if( b == this.playerSprite.body ){
+					sprite.kill();
+					this.wetness ++;
+				}
+				if( b == this.payungSprite.body ){
+					sprite.kill();
+				}
+				if( b == this.ground.body ){
+					sprite.kill();
+				}
+			}.bind(this));
+		}.bind(this));
 		
-		this.cameraSprite = this.add.sprite( -400, 400, null);
-		this.physics.p2.enable( this.cameraSprite, true );
-		this.cameraSprite.body.addRectangle( 100, 100, 0, 0 );  
-		this.cameraSprite.body.mass = 1000;
-		// this.camera.focusOn( playerSprite );
-		this.graphic = this.add.graphics(0,0);
+		// this.camera.focusOn( this.playerSprite );
+		this.graphic = game.add.graphics(0,0);
 		this.graphic.cameraOffset.setTo(0,0);
 		this.graphic.fixedToCamera = true;
 		// this.paused = true;
@@ -126,7 +135,7 @@ Journey.Game.prototype = {
 	},
 
 	update: function() {
-		this.camera.focusOnXY( this.cameraSprite.body.x+750, this.cameraSprite.body.y-180 );
+		this.camera.focusOnXY( this.playerSprite.body.x, this.playerSprite.body.y );
 		var dt = this.time.elapsed / 1000; // seconds
 		
 		this.emt.update( dt );
@@ -136,9 +145,14 @@ Journey.Game.prototype = {
 
 		this.graphic.clear();
 		this.graphic.beginFill(0x0099FF);
-		this.graphic.drawRect( 0,0, this.width * ( 100 - this.wetness)/100, 20 );
+		this.graphic.drawRect( 0,0, Journey.GAME_WIDTH * ( 100 - this.wetness)/100, 20 );
 		
 		this.wetness = Math.max( 0, this.wetness - 3 * dt );
+
+		if (this.wetness >= 100) {
+			this.wetness = 0;
+			this.state.start('Game');
+		};
 		
 		var handForce = 10000;
 		if( this.leftDown ){
@@ -188,7 +202,6 @@ Journey.Game.prototype = {
 		if (!Journey.gameOver) {
 			this.playerSprite.body.velocity.x = 100;
 			this.ground.body.velocity.x = -3000;
-			this.cameraSprite.body.velocity.x = 50;
 		};
 
 		// game.paused = true;
@@ -214,20 +227,6 @@ function RainEmitter( game, sx, sy, w, h, dropLimit, vThres, vRes ){
 		this.game.physics.p2.enable( s, false );
 		s.body.clearShapes();
 		s.body.addCircle( 2 );
-		
-
-		s.body.onBeginContact.add( function( b ){
-			if( b == game.playerSprite.body ){
-				game.wetness ++;
-				s.kill();
-			}
-			if( b === game.payungSprite ){
-				s.kill();
-			}
-			if( b === game.ground ){
-				s.kill();
-			}
-		});
 
 		this.spawn( s, game);
 	}
