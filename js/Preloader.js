@@ -9,13 +9,14 @@ Journey.Preloader.prototype = {
             (Journey.GAME_HEIGHT-27)/2, 'preloaderBar');
         this.load.setPreloadSprite(this.preloadBar);
 
-        this.load.image('chara', 'assets/nanoha_taiken_blue.png');
-		this.load.image('umbrella', 'assets/Umbrella.png');
+        // this.load.image('chara', 'assets/nanoha_taiken_blue.png');
+        this.load.spritesheet('chara', 'assets/MainCharaAnimation_Spritesheet9x1.png', 205, 330)
+		this.load.image('umbrella', 'assets/PayungHand.png');
 		this.load.image('drop', 'assets/tes2.png');
 		this.load.image('cloudMain', 'assets/cloud-hi.png');
 		this.load.image('cloudExtra', 'assets/clouds1.png');
 		this.load.image('bushMain', 'assets/bushes-hi.png');
-		this.load.image('groundMain', 'assets/ground.png');
+		this.load.image('groundMain', 'assets/CCTimur.png');
 		this.load.image('logo', 'assets/Logo.jpg');
 
  
