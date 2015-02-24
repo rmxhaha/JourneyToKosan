@@ -3,6 +3,7 @@ Journey.Game = function(game){
 	this.r = null;
 	this.swipeDetect = null;
 	this.playerSprite = null;
+	this.playerSpriteAnim = null;
 	this.payungSprite = null;
 	this.logoSprite = null;
 	this.ground = null;
@@ -13,6 +14,7 @@ Journey.Game = function(game){
 	this.rightDown = false;
 	this.tap = false;
 	this.wetness = 0;
+	this.dummy = null;
 };
 
 	// var cloudSprite1, cloudSprite2, cloudSpriteEx, bushSprite, groundSprite;
@@ -27,6 +29,7 @@ Journey.Game = function(game){
 	// var logoSprite;
 	// var wetness = 0;
 	const eps = 1e-6;
+	const isDebug = false;
 
 Journey.Game.prototype = {
 
@@ -59,19 +62,33 @@ Journey.Game.prototype = {
 		this.physics.p2.gravity.y = 500;
 		this.physics.p2.friction = 0;
 		
-	 //    //  Add 2 sprites which we'll join with a spring
+	    //  Add 2 sprites which we'll join with a spring
+	 	// game.paused = true;
+	 	this.ground = this.add.sprite( 0, 600, 'groundMain' );
+	 	this.payungSprite = this.add.sprite(180, 200, 'umbrella');
 	    this.playerSprite = this.add.sprite(200, 400, 'chara');
-		this.payungSprite = this.add.sprite(60, 150, 'umbrella');
-		this.payungSprite.scale.setTo( 0.35 );
+	    this.playerSpriteAnim = this.playerSprite.animations.add('walk');
+	    this.playerSpriteAnim.play(10, true);
+	    // this.playerSpriteAnim.play(10, true);
 		
-		this.physics.p2.enable([this.playerSprite, this.payungSprite], true);
+		// this.payungSprite.scale.setTo( 0.35 );
+
+
+
+		this.playerSprite.scale.setTo( 0.8 );
+
+		this.physics.p2.enable([this.playerSprite, this.payungSprite], isDebug);
 
 		this.playerSprite.body.fixedRotation = true;
-		this.playerSprite.body.mass = 500;
+		this.playerSprite.body.mass = 50000;
 		this.payungSprite.body.mass = 200;
 		this.payungSprite.body.damping = 0.8;
 
-		this.payungSprite.anchor.setTo( 0.5, 0.2 );
+		this.playerSprite.body.clearShapes();
+		this.playerSprite.body.addRectangle( 100, 200, 0, 0);
+
+
+		this.payungSprite.anchor.setTo( 0.48, 0.2 );
 		this.payungSprite.body.clearShapes();
 		
 		var pts = [
@@ -87,7 +104,7 @@ Journey.Game.prototype = {
 			
 		for( var i = 0; i < pts.length; ++ i ) { pts[i] = pts[i] * 1.3; }
 
-				var revoluteConstraint = this.physics.p2.createRevoluteConstraint(this.playerSprite, [0,0], this.payungSprite,  [0,200] );
+				var revoluteConstraint = this.physics.p2.createRevoluteConstraint(this.playerSprite, [0,0], this.payungSprite,  [-80,150] );
 
 		this.payungSprite.body.addPolygon({}, pts);
 		
@@ -95,15 +112,16 @@ Journey.Game.prototype = {
 
 	    this.cursors = this.input.keyboard.createCursorKeys();
 
-		this.ground = this.add.sprite( 0, 600, 'groundMain' );
-		this.ground.scale.setTo( 10 );
+		
+		this.ground.scale.setTo( 2 );
 
-		this.physics.p2.enable( this.ground, true );
+
+		this.physics.p2.enable( this.ground, isDebug );
 
 		this.ground.body.clearShapes();
 		this.ground.body.addRectangle( 30000, 200, 0, 0 );  
 		this.ground.body.static = true;
-		
+		this.ground.anchor.setTo( 0, 0.951);
 
 		this.emt = new RainEmitter(this, 0,0, Journey.GAME_WIDTH*2, 100, 100, 1500, 500 );
 
@@ -132,11 +150,22 @@ Journey.Game.prototype = {
 		this.logoSprite.scale.setTo( 0.1 );
 
 		this.input.onTap.add(doSomething, this);
+
+		this.dummy = game.add.graphics(0,0);
+		this.dummy.cameraOffset.setTo(0,0);
+		this.dummy.fixedToCamera = true;
+		this.dummy.clear();
+		this.dummy.beginFill(0x000000);
+		this.dummy.drawRect( 0,0, Journey.GAME_WIDTH , Journey.GAME_HEIGHT );
+		dummyAlpha = 1.;
 	},
 
 	update: function() {
 		this.camera.focusOnXY( this.playerSprite.body.x, this.playerSprite.body.y );
 		var dt = this.time.elapsed / 1000; // seconds
+
+		this.dummy.alpha = Math.max( 0, dummyAlpha);
+		dummyAlpha -= 0.01;
 		
 		this.emt.update( dt );
 		// emt.spawnX = this.camera.x - this.width;
@@ -200,9 +229,14 @@ Journey.Game.prototype = {
 		}
 		// playerSprite.body.applyForce([-3000,0], playerSprite.body.x, playerSprite.body.y)
 		if (!Journey.gameOver) {
-			this.playerSprite.body.velocity.x = 100;
+			this.playerSprite.body.velocity.x = 200;
 			this.ground.body.velocity.x = -3000;
-		};
+			this.playerSpriteAnim.isPaused = false;
+		}
+		else {
+			this.playerSprite.body.velocity.x = 0;
+			this.playerSpriteAnim.isPaused = true;
+		}
 
 		// game.paused = true;
 	}
