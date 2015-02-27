@@ -3,13 +3,29 @@
 <head>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<title>Pulang ke kosan Prototype</title>
-</head>
-<body style="margin:0">
 	<script src="js/cocoon.js"></script>
 	<script src="js/hammer.js"></script>
 	<script src="js/phaser.min.js"></script>
 	<script src="js/Recognizer.js"></script>
-    <script src="js/game.js"></script>
 	<script>if (!navigator.isCocoonJS){ window.location.href }</script>
+</head>
+<body style="margin:0">
+	<script>
+	    var game = new Phaser.Game(
+	    	window.innerWidth * window.devicePixelRatio, 
+			window.innerHeight * window.devicePixelRatio,
+			Phaser.CANVAS, 'game');
+	</script>
+    <script src="js/Boot.js"></script>
+    <script src="js/Preloader.js"></script>
+    <script src="js/MainMenu.js"></script>
+    <script src="js/Game.js"></script>
+	<script>
+		game.state.add('Boot', Journey.Boot);
+	    game.state.add('Preloader', Journey.Preloader);
+	    game.state.add('MainMenu', Journey.MainMenu);
+	    game.state.add('Game', Journey.Game);
+	    game.state.start('Boot');
+	</script>
 </body>
 </html>
