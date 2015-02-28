@@ -2,7 +2,7 @@ var Journey = {};
 Journey.Boot = function(game) {};
 Journey.Boot.prototype = {
     preload: function() {
-        this.load.image('preloaderBar', 'assets/loading-bar.png');
+        this.load.image('preloaderBar', 'assets/sprites/loading-bar.png');
     },
     create: function() {
         this.input.maxPointers = 1;

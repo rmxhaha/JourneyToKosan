@@ -37,7 +37,7 @@ Journey.Game = function(game){
 	// var logoSprite;
 	// var wetness = 0;
 	const eps = 1e-6;
-	const isDebug = false;
+	const isDebug = true;
 
 Journey.Game.prototype = {
 
@@ -72,8 +72,14 @@ Journey.Game.prototype = {
 		
 	    //  Add 2 sprites which we'll join with a spring
 	 	// game.paused = true;
-		this.b = this.add.sprite( 10000, -337, 'background' );
-	 	this.ground = this.add.sprite( 10000, -337, 'groundMain' );
+		//this.b = this.add.sprite( 10000, -337, 'background' );
+		for( var i = 1; i <= 5; ++ i ){
+			this.add.sprite( 10000 + (i-1) * 2000, -337, 'background' + i );
+			this.add.sprite( 10000 + (i-1) * 2000, -337, 'ground' + i );
+		}
+		
+		
+	 	this.ground = this.add.sprite( 10000, -337, null );
 	 	this.payungSprite = this.add.sprite(80, 200, 'umbrella');
 	    this.playerSprite = this.add.sprite(100, 400, 'chara');
 		//this.payungSprite = this.add.sprite(16000, -1000, 'umbrella');
@@ -88,7 +94,7 @@ Journey.Game.prototype = {
 
 		this.playerSprite.scale.setTo( 0.8 );
 
-		this.physics.p2.enable([this.playerSprite, this.payungSprite, this.b], isDebug);
+		this.physics.p2.enable([this.playerSprite, this.payungSprite], isDebug);
 
 		this.playerSprite.body.fixedRotation = true;
 		this.playerSprite.body.mass = 500;
@@ -98,9 +104,6 @@ Journey.Game.prototype = {
 		this.playerSprite.body.clearShapes();
 		this.playerSprite.body.addRectangle( 100, 200, 0, 10);
 
-		this.b.body.clearShapes();
-		this.b.body.static = true;
-		
 		this.payungSprite.anchor.setTo( 0.48, 0.2 );
 		this.payungSprite.body.clearShapes();
 		
@@ -152,7 +155,7 @@ Journey.Game.prototype = {
 			}.bind(this));
 		}.bind(this));
 		
-		// this.camera.focusOn( this.playerSprite );
+		this.camera.follow( this.playerSprite );
 		this.graphic = game.add.graphics(0,0);
 		this.graphic.cameraOffset.setTo(0,0);
 		this.graphic.fixedToCamera = true;
@@ -191,7 +194,7 @@ Journey.Game.prototype = {
 	},
 
 	update: function() {
-		this.camera.focusOnXY( this.playerSprite.body.x, this.playerSprite.body.y );
+		//this.camera.focusOnXY( this.playerSprite.body.x, this.playerSprite.body.y );
 		var dt = this.time.elapsed / 1000; // seconds
 
 		this.dummy.alpha = Math.max( 0, dummyAlpha);

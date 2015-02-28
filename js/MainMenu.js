@@ -30,7 +30,7 @@ Journey.MainMenu.prototype = {
         
         //  Add 2 sprites which we'll join with a spring
         // game.paused = true;
-        this.ground = this.add.sprite( 10000, -337, 'groundMain' );
+        this.ground = this.add.sprite( 10000, -337, 'ground1' );
         this.payungSprite = this.add.sprite(180, 200, 'umbrella');
         this.playerSprite = this.add.sprite(200, 400, 'chara', 7);
         this.playerSpriteAnim = this.playerSprite.animations.add('walk');
