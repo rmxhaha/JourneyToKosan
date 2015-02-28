@@ -1,0 +1,25 @@
+	{ 
+		
+		"CCTimur_ground": [
+			
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   1280, 356  ,  724, 140  ,  863, 0  ,  1280, 0  ],
+					"restitution": 0.0
+				}  ,
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   724, 140  ,  1280, 356  ,  380, 276  ,  515, 140  ],
+					"restitution": 0.0
+				}  ,
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   380, 276  ,  1280, 356  ,  0, 356  ,  0, 276  ],
+					"restitution": 0.0
+				}  
+		]
+		
+	}
